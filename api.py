@@ -13,6 +13,7 @@ def index():
     geolocator = Nominatim(user_agent="api")
     if request.method == 'POST':
         address = request.form['address']
+        address_entered = address
         if not address:
             flash('Address is required')
         else:
@@ -36,9 +37,10 @@ def index():
                     # Set the current pharmacy's full info and distance to closest if it is closer than the previous
                     closest = row
                     closest_distance = distance.distance(location_lat_long, row_lat_long).mi
-            print closest['name'], closest['address'], closest['city'], closest['state'], closest['zip']
-            print closest_distance, "miles away"
-        return render_template('index.html', closest=closest)
+            results = "{name}, {address}, {city}, {state}, {zip} , {distance} miles away".format(name=closest['name'],
+                                    address=closest['address'], city = closest['city'], state=closest['state'],
+                                    zip=closest['zip'], distance=closest_distance)
+            return render_template('index.html', results=results, address_entered=address_entered)
     return render_template('index.html')
 
 
