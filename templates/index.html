@@ -7,12 +7,11 @@
 <body>
 <h1>Find the nearest pharmacy</h1>
 <h2>Enter your address</h2>
-<form action="{{ url_for('index') }}" method='POST'>
-    <div>
-        <input type="text" id="address"  placeholder="Enter Address" >
-    </div>
+<form action='/' method='POST'>
+    <input type="text" name="address" id='address' placeholder="Enter Address">
+
     <button type="submit">Submit</button>
 </form>
-Nearest pharmacy: {{ location }}
+Nearest pharmacy: {{ request.form['closest'] }}
 </body>
 </html>
