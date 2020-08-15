@@ -5,13 +5,14 @@
     <title>Calculate nearest pharmacy</title>
 </head>
 <body>
+<h1>Find the nearest pharmacy</h1>
 <h2>Enter your address</h2>
-<form role="form" method='POST' action='/'>
-        <div>
-          <input type="text" name="address"  placeholder="Enter Address" >
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+<form action="{{ url_for('index') }}" method='POST'>
+    <div>
+        <input type="text" id="address"  placeholder="Enter Address" >
+    </div>
+    <button type="submit">Submit</button>
+</form>
 Nearest pharmacy: {{ location }}
 </body>
 </html>
