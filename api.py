@@ -10,49 +10,36 @@ app.config["SECRET_KEY"] = 'A basic secret key, for testing purposes'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    geolocator = Nominatim(user_agent="api")
     if request.method == 'POST':
         address = request.form['address']
         if not address:
             flash('Address is required')
         else:
             pharmacies = []
+            # open csv and read it in as a dict
             with open('pharmacies.csv') as File:
                 reader = csv.DictReader(File)
                 for row in reader:
                     pharmacies.append(row)
+            # Use Geopy to get full address and lat/long of location
             location = geolocator.geocode(address)
             location_lat_long = (location.latitude, location.longitude)
+            # Set the first location in pharmacy dict to default as the closest in order to compare
             closest = pharmacies[1]
             closest_distance = distance.distance(location_lat_long, (closest['latitude'], closest['longitude'])).mi
-            print closest
+            # Iterate through the pharmacies dict, starting by grabbing the lat/long of the current row
             for row in pharmacies:
                 row_lat_long = row['latitude'], row['longitude']
+                # Compare distance between the user's entered location and compare to the distance of the last distance
                 if distance.distance(location_lat_long, row_lat_long) < closest_distance:
+                    # Set the current pharmacy's full info and distance to closest if it is closer than the previous
                     closest = row
                     closest_distance = distance.distance(location_lat_long, row_lat_long).mi
+            print closest['name'], closest['address'], closest['city'], closest['state'], closest['zip']
+            print closest_distance, "miles away"
         return render_template('index.html', closest=closest)
     return render_template('index.html')
-
-
-geolocator = Nominatim(user_agent="api")
-
-
-# def calculate_distance():
-#     pharmacies = []
-#     with open('pharmacies.csv') as File:
-#         reader = csv.DictReader(File)
-#         for row in reader:
-#             pharmacies.append(row)
-#     location = geolocator.geocode(request.form('address'))
-#     location_lat_long = (location.latitude, location.longitude)
-#     print(location)
-#
-#     closest = distance.distance(location_lat_long, (pharmacies[1]['latitude'], pharmacies[1]['longitude']))
-#     for row in pharmacies:
-#         row_lat_long = row['latitude'], row['longitude']
-#         if distance.distance(location_lat_long, row_lat_long) < closest:
-#             closest = row
-#     return closest
 
 
 app.run()
