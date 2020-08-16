@@ -10,11 +10,16 @@ app.config["SECRET_KEY"] = 'A basic secret key, for testing purposes'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    # Set up nominatim in Geopy to be able to take in an address
     geolocator = Nominatim(user_agent="api")
+    # Check to see if request method is POST
     if request.method == 'POST':
-        address = request.form['address']
-        address_entered = address
-        if not address:
+        # Take in address, city, and state, then format them into a single string to be used with Geopy
+        street_address = request.form['street_address']
+        city = request.form['city']
+        state = request.form['state']
+        address = '{street} {city} {state}'.format(street=street_address, city=city, state=state)
+        if address is None:
             flash('Address is required')
         else:
             pharmacies = []
@@ -37,10 +42,16 @@ def index():
                     # Set the current pharmacy's full info and distance to closest if it is closer than the previous
                     closest = row
                     closest_distance = distance.distance(location_lat_long, row_lat_long).mi
+            # Format the results of the closest pharmacy into a string to be returned
             results = "{name}, {address}, {city}, {state}, {zip} , {distance} miles away".format(name=closest['name'],
-                                    address=closest['address'], city = closest['city'], state=closest['state'],
-                                    zip=closest['zip'], distance=closest_distance)
-            return render_template('index.html', results=results, address_entered=address_entered)
+                                                                                                 address=closest[
+                                                                                                     'address'],
+                                                                                                 city=closest['city'],
+                                                                                                 state=closest['state'],
+                                                                                                 zip=closest['zip'],
+                                                                                                 distance=round(closest_distance, 2))
+            # Render the template 'index.html' and pass the results and address to it
+            return render_template('index.html', results=results, address=location)
     return render_template('index.html')
 
 

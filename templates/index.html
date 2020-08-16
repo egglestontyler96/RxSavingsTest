@@ -6,13 +6,14 @@
 </head>
 <body>
 <h1>Find the nearest pharmacy</h1>
-<h2>Enter your address without the zip code</h2>
+<h2>Enter your address</h2>
 <form action='/' method='POST'>
-    <input type="text" name="address" id='address' placeholder="Enter Address">
-
+    <input type="text" name="street_address" id='street_address' placeholder="Enter Street Address">
+    <input type="text" name="city" id='city' placeholder="Enter City">
+    <input type="text" name="state" id='state' placeholder="Enter State">
     <button type="submit">Submit</button>
 </form>
-<p>Your Address: {{ address_entered }}</p>
+<p>Your Address: {{ address }}</p>
 <p>Nearest Pharmacy: {{ results }}</p>
 </body>
 </html>
